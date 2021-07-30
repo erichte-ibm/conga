@@ -1,18 +1,11 @@
-use std::collections::HashMap;
-
-struct Collector {
-    raw: HashMap<String, String>, // command -> output
-    data: HashMap<String, String>, // tag -> value
-}
-
-impl Collector {
-    fn run_command(&mut self, command: &str) -> Result<String, String> {
-        Ok(String::from("test"))
-    }
-}
 
 
-fn get_num_cpus(col: Collector) {
+mod collector;
+use collector::Collector;
+
+
+
+fn get_num_cpus(col: &mut Collector) {
 
     let strig = col.run_command("lscpu");
 
@@ -23,9 +16,9 @@ fn get_num_cpus(col: Collector) {
 
 
 fn main() {
+    let mut col = Collector::new();
 
-
-    println!("Hello, world!");
+    println!("{:?}", col.run_command("ls"));
 }
 
 
