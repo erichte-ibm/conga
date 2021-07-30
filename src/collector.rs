@@ -3,6 +3,7 @@ use std::process::Command;
 use std::process::Output;
 
 // TODO: should we include an error type in here too to display collector function errors?
+#[allow(dead_code)]
 pub enum CollectorValue {
     Number(i64),
     Text(String),
