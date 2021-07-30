@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::process::Command;
 use std::process::Output;
 
-enum CollectorValue {
+pub enum CollectorValue {
     Number(i64),
     Text(String),
     // probably will need more here
@@ -10,6 +10,8 @@ enum CollectorValue {
 
 pub struct Collector {
     raw: HashMap<String, Output>, // command -> output
+    // TODO: consider making this just a list?
+    //  Doesn't really need to be a HashMap if we aren't referring to it later
     data: HashMap<String, CollectorValue>, // tag -> value
 }
 

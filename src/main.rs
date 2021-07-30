@@ -1,24 +1,33 @@
 
 
 mod collector;
-use collector::Collector;
+use collector::{Collector, CollectorValue};
 
+mod cpu;
 
-
-fn get_num_cpus(col: &mut Collector) {
-
-    let strig = col.run_command("lscpu");
-
-    // parse(strig)
-
-    // col.add_data(tag, strig)
+// TODO: rename this
+struct PlatformData {
+    tag: &'static str,
+    func: fn(&mut Collector) -> CollectorValue,
 }
 
+const PLATFORM: &'static [PlatformData] = &[
+    PlatformData {tag: "cpu.cores", func: cpu::get_cores},
+];
 
 fn main() {
     let mut col = Collector::new();
 
-    println!("{:?}", col.run_command("ls"));
+    // Iterate through each tag:func pair
+    //   Call the function, and insert the data from the collecting function
+    // TODO: add error checking here?
+    for pd in PLATFORM {
+        let f = pd.func;
+        let data = f(&mut col);
+        col.add_data(String::from(pd.tag), data)
+    }
+
+    // TODO: write output to json
 }
 
 
