@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::process::Command;
 use std::process::Output;
 
+// TODO: should we include an error type in here too to display collector function errors?
 pub enum CollectorValue {
     Number(i64),
     Text(String),
