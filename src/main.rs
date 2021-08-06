@@ -1,7 +1,6 @@
-
 // TODO: figure out the proper way to do multi-file work. Is this okay?
 mod collector;
-use collector::{Collector, CollectorValue};
+use collector::{Collector, CollectorValue, CollectorErr};
 
 // TODO: move all the collector function modules into another directory
 //  might make importing easier, see mod.rs / module docs
@@ -10,8 +9,7 @@ mod cpu;
 // TODO: rename this
 struct PlatformData {
     tag: &'static str,
-    // TODO: This should probably return a Result<> or Option<> in case of error
-    func: fn(&mut Collector) -> CollectorValue,
+    func: fn(&mut Collector) -> Result<CollectorValue, CollectorErr>,
 }
 
 // TODO: This also needed a better name than "platform"
@@ -27,7 +25,8 @@ fn main() {
     // TODO: add error checking here?
     for pd in PLATFORM {
         let f = pd.func;
-        let data = f(&mut col);
+        // YOLO: actually check the error instead of just unwrap >:(
+        let data = f(&mut col).unwrap();
         // TODO: Perhaps error check here
         col.add_data(String::from(pd.tag), data)
     }

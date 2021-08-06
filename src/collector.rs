@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::process::Command;
 use std::process::Output;
 
+pub type CollectorErr = Box<dyn std::error::Error>;
+
 // TODO: should we include an error type in here too to display collector function errors?
 #[allow(dead_code)]
 pub enum CollectorValue {

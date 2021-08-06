@@ -1,7 +1,7 @@
 use crate::collector::*;
 use regex::Regex;
 
-pub fn get_cores(col: &mut Collector) -> CollectorValue {
+pub fn get_cores(col: &mut Collector) -> Result<CollectorValue, CollectorErr> {
     // TODO: There is a lot of boilerplate for this, can we factor this out into a simpler function?
     let re = Regex::new(r"\s+Core\(s\) per socket:\s+(\d+)").unwrap();
 
@@ -12,5 +12,5 @@ pub fn get_cores(col: &mut Collector) -> CollectorValue {
     let caps = re.captures(&output).unwrap();
 
     // TODO: maybe not assume the match worked correctly
-    CollectorValue::Number(caps[1].parse::<i64>().unwrap())
+    Ok(CollectorValue::Number(caps[1].parse::<i64>().unwrap()))
 }
