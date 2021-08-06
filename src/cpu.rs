@@ -12,5 +12,5 @@ pub fn get_cores(col: &mut Collector) -> Result<CollectorValue, CollectorErr> {
     let caps = re.captures(&output).unwrap();
 
     // TODO: maybe not assume the match worked correctly
-    Ok(CollectorValue::Number(caps[1].parse::<i64>().unwrap()))
+    Ok(CollectorValue::Integer(caps[1].parse::<i64>().unwrap()))
 }

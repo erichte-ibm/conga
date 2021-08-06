@@ -31,7 +31,7 @@ fn main() {
         col.add_data(String::from(pd.tag), data)
     }
 
-    // TODO: write output to json
+    col.print();
 }
 
 
