@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2021 IBM Corp.
+
 // TODO: figure out the proper way to do multi-file work. Is this okay?
 mod collector;
 use collector::{Collector, CollectorValue, CollectorErr};
