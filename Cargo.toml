@@ -1,5 +1,5 @@
 [package]
-name = "crypto-steve"
+name = "conga"
 version = "0.1.0"
 authors = ["Eric Richter <erichte@linux.ibm.com>"]
 edition = "2018"

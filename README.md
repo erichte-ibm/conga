@@ -1,2 +1,2 @@
-# crypto-steve
+# conga
 System configuration data gatherer
