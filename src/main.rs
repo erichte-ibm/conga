@@ -8,6 +8,7 @@ use collector::{Collector, CollectorValue, CollectorErr};
 // TODO: move all the collector function modules into another directory
 //  might make importing easier, see mod.rs / module docs
 mod cpu;
+mod memory;
 
 // TODO: rename this
 struct PlatformData {
@@ -18,6 +19,15 @@ struct PlatformData {
 // TODO: This also needed a better name than "platform"
 const PLATFORM: &'static [PlatformData] = &[
     PlatformData {tag: "cpu.cores", func: cpu::get_cores},
+    PlatformData {tag: "mem.total", func: memory::get_mem_total},
+    PlatformData {tag: "mem.used", func: memory::get_mem_used},
+    PlatformData {tag: "mem.free", func: memory::get_mem_free},
+    PlatformData {tag: "mem.shared", func: memory::get_mem_shared},
+    PlatformData {tag: "mem.buff/cache", func: memory::get_mem_buff_and_cache},
+    PlatformData {tag: "mem.available", func: memory::get_mem_available},
+    PlatformData {tag: "swap.total", func: memory::get_swap_total},
+    PlatformData {tag: "swap.used", func: memory::get_swap_used},
+    PlatformData {tag: "swap.free", func: memory::get_swap_free},
 ];
 
 fn main() {
