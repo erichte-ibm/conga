@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 use std::process::Command;
 use std::process::Output;
-
+use regex::Regex;
 use serde_json;
 
 pub type CollectorErr = Box<dyn std::error::Error>;
@@ -49,6 +49,19 @@ impl Collector {
 
         self.raw.insert(String::from(command), output);
         self.raw.get(command).unwrap().clone()
+    }
+
+    // returns a string representation of the first capture group of the regex
+    pub fn get_regex_from_command(&mut self, command: &str, regex: &str) -> Option<String> {
+        let re = Regex::new(regex).unwrap();
+        let out = self.run_command(command);
+        let output = String::from_utf8(out.stdout).unwrap();
+        let cap = re.captures(&output).unwrap();
+        if cap.len() < 2 {
+            None
+        } else {
+            Some(String::from(cap.get(1).unwrap().as_str()).clone())
+        }
     }
 
     pub fn add_data(&mut self, tag: String, data: CollectorValue) {
