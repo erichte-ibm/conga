@@ -5,6 +5,10 @@ use std::collections::HashMap;
 use std::process::Command;
 use std::process::Output;
 use regex::Regex;
+use std::path::PathBuf;
+use std::fs::File;
+use std::io::Write;
+
 use serde_json;
 
 pub type CollectorErr = Box<dyn std::error::Error>;
@@ -87,7 +91,7 @@ impl Collector {
         Collector{raw: HashMap::new(), data: Vec::new() }
     }
 
-    pub fn print(self) {
+    pub fn to_string(self) -> String {
         let mut map = serde_json::Map::new();
         for d in self.data {
             let val = match d.1 {
@@ -99,6 +103,20 @@ impl Collector {
             map.insert(d.0, val);
         }
 
-        println!("{}", serde_json::to_string(&map).unwrap());
+        serde_json::to_string(&map).unwrap()
     }
-}
+
+    pub fn print(self) {
+        println!("{}", self.to_string());
+    }
+
+    pub fn write_file(self, output: &str) {
+        let output = PathBuf::from(output);
+        let mut file = match File::create(&output) {
+            Err(x) => panic!("couldn't write to {}: {}", output.display(), x),
+            Ok(f) => f,
+        };
+
+        file.write_all(self.to_string().as_bytes()).unwrap();
+    }
+ }
