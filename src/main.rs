@@ -48,6 +48,11 @@ fn main() {
             .long("allow-failures")
             .help("Don't abort if a collector fails")
             .takes_value(false))
+        .arg(Arg::with_name("output")
+            .short("o")
+            .long("output")
+            .help("Output file path to write to")
+            .takes_value(true))
         .get_matches();
 
     // Iterate through each tag:func pair
@@ -71,7 +76,11 @@ fn main() {
         }
     }
 
-    col.print();
+    match matches.value_of("output") {
+        Some(o) => col.write_file(o),
+        None => col.print(),
+    }
+
 }
 
 
