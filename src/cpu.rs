@@ -3,6 +3,6 @@
 use crate::collector::*;
 
 pub fn get_cores(col: &mut Collector) -> Result<CollectorValue, CollectorErr> {
-    let captures = col.parse_from_command("lscpu", r"\s+Core\(s\) per socket:\s+(\d+)")?;
+    let captures = col.parse_from_command("lscpu", r"\s+Core\(s\) per socket:\s+(\d+)", OutputStream::STDOUT)?;
     Ok(CollectorValue::Integer(captures[1].parse::<i64>().unwrap()))
 }

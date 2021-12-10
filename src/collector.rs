@@ -8,7 +8,10 @@ use regex::Regex;
 use serde_json;
 
 pub type CollectorErr = Box<dyn std::error::Error>;
-
+pub enum OutputStream{
+    STDOUT,
+    STDERR,
+}
 // TODO: should we include an error type in here too to display collector function errors?
 #[allow(dead_code)]
 pub enum CollectorValue {
@@ -52,10 +55,14 @@ impl Collector {
     }
 
     // returns a vector of strings for every match captured from output
-    pub fn parse_from_command(&mut self, command: &str, regex: &str) -> Result<Vec<String>, CollectorErr> {
+    pub fn parse_from_command(&mut self, command: &str, regex: &str, out_type: OutputStream) -> Result<Vec<String>, CollectorErr> {
         let re = Regex::new(regex).unwrap();
         let out = self.run_command(command);
-        let output = String::from_utf8(out.stdout)?;
+        let output;
+        match out_type {
+            OutputStream::STDOUT => {output = String::from_utf8(out.stdout)?;}
+            OutputStream::STDERR => {output = String::from_utf8(out.stderr)?;}
+        }
         let cap = re.captures(&output);
         match cap {
             None => return Err(format!("Failed to parse output of command '{}' with \
