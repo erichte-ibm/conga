@@ -51,16 +51,20 @@ impl Collector {
         self.raw.get(command).unwrap().clone()
     }
 
-    // returns a string representation of the first capture group of the regex
-    pub fn get_regex_from_command(&mut self, command: &str, regex: &str) -> Option<String> {
+    // returns a vector of strings for every match captured from output
+    pub fn parse_from_command(&mut self, command: &str, regex: &str) -> Result<Vec<String>, CollectorErr> {
         let re = Regex::new(regex).unwrap();
         let out = self.run_command(command);
-        let output = String::from_utf8(out.stdout).unwrap();
-        let cap = re.captures(&output).unwrap();
-        if cap.len() < 2 {
-            None
-        } else {
-            Some(String::from(cap.get(1).unwrap().as_str()).clone())
+        let output = String::from_utf8(out.stdout)?;
+        let cap = re.captures(&output);
+        match cap {
+            None => return Err(format!("Failed to parse output of command '{}' with \
+                                regex '{}' over output:\n{}", command, regex, output).into()),
+            Some(c) => return Ok(
+                                  c.iter()
+                                  .map(| match_str | match_str.unwrap().as_str().to_string())
+                                  .collect()
+                                ),
         }
     }
 
