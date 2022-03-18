@@ -13,25 +13,35 @@ mod memory;
 mod gcc;
 
 // TODO: rename this
-struct PlatformData {
+struct TagCollector {
     tag: &'static str,
     func: fn(&mut Collector) -> Result<CollectorValue, CollectorErr>,
 }
 
+struct GroupCollector {
+    tag: &'static str,
+    func: fn(&mut Collector) -> Result<Vec<(String, CollectorValue)>, CollectorErr>,
+}
+
+enum Tag {
+    Single(TagCollector),
+    Group(GroupCollector),
+}
+
 // TODO: This also needed a better name than "platform"
-const PLATFORM: &'static [PlatformData] = &[
-    PlatformData {tag: "cpu.cores", func: cpu::get_cores},
-    PlatformData {tag: "mem.total", func: memory::get_mem_total},
-    PlatformData {tag: "mem.used", func: memory::get_mem_used},
-    PlatformData {tag: "mem.free", func: memory::get_mem_free},
-    PlatformData {tag: "mem.shared", func: memory::get_mem_shared},
-    PlatformData {tag: "mem.buff/cache", func: memory::get_mem_buff_and_cache},
-    PlatformData {tag: "mem.available", func: memory::get_mem_available},
-    PlatformData {tag: "swap.total", func: memory::get_swap_total},
-    PlatformData {tag: "swap.used", func: memory::get_swap_used},
-    PlatformData {tag: "swap.free", func: memory::get_swap_free},
-    PlatformData {tag: "gcc.version", func: gcc::version},
-    PlatformData {tag: "gcc.flags", func: gcc::flags},
+const PLATFORM: &'static [Tag] = &[
+    Tag::Single(TagCollector {tag: "cpu.cores", func: cpu::get_cores}),
+    Tag::Single(TagCollector {tag: "mem.total", func: memory::get_mem_total}),
+    Tag::Single(TagCollector {tag: "mem.used", func: memory::get_mem_used}),
+    Tag::Single(TagCollector {tag: "mem.free", func: memory::get_mem_free}),
+    Tag::Single(TagCollector {tag: "mem.shared", func: memory::get_mem_shared}),
+    Tag::Single(TagCollector {tag: "mem.buff/cache", func: memory::get_mem_buff_and_cache}),
+    Tag::Single(TagCollector {tag: "mem.available", func: memory::get_mem_available}),
+    Tag::Single(TagCollector {tag: "swap.total", func: memory::get_swap_total}),
+    Tag::Single(TagCollector {tag: "swap.used", func: memory::get_swap_used}),
+    Tag::Single(TagCollector {tag: "swap.free", func: memory::get_swap_free}),
+    Tag::Single(TagCollector {tag: "gcc.version", func: gcc::version}),
+    Tag::Single(TagCollector {tag: "gcc.flags", func: gcc::flags}),
 ];
 
 fn main() {
@@ -61,22 +71,49 @@ fn main() {
     // Iterate through each tag:func pair
     //   Call the function, and insert the data from the collecting function
     for pd in PLATFORM {
-        let f = pd.func;
+        match pd {
+            Tag::Single(pd) => {
+                let f = pd.func;
 
-        let data = f(&mut col);
+                let data = f(&mut col);
 
-        if let Ok(d) = data {
-            col.add_data(String::from(pd.tag), d)
+                if let Ok(d) = data {
+                    col.add_data(String::from(pd.tag), d)
+                }
+                else if matches.is_present("allow-failures") {
+                    // TODO: Use a CollectorError type here and use that to record the error.
+                    col.add_data(String::from(pd.tag), CollectorValue::Text(String::from("(null)")));
+                }
+                else {
+                    // Propogate the panic upwards and stop the collection.
+                    // TODO: Maybe be a little nicer about this.
+                    data.unwrap();
+                }
+            }
+            // TODO: This and the above are basically the same but with minor deviations
+            //  can probably be rewritten to share logic a bit better
+            Tag::Group(pd) => {
+                let f = pd.func;
+
+                let data = f(&mut col);
+
+                if let Ok(tg) = data {
+                    for (tag, d) in tg {
+                        col.add_data(String::from(tag), d)
+                    }
+                }
+                else if matches.is_present("allow-failures") {
+                    // TODO: Use a CollectorError type here and use that to record the error.
+                    col.add_data(String::from(pd.tag), CollectorValue::Text(String::from("(null)")));
+                }
+                else {
+                    // Propogate the panic upwards and stop the collection.
+                    // TODO: Maybe be a little nicer about this.
+                    data.unwrap();
+                }
+            }
         }
-        else if matches.is_present("allow-failures") {
-            // TODO: Use a CollectorError type here and use that to record the error.
-            col.add_data(String::from(pd.tag), CollectorValue::Text(String::from("(null)")));
-        }
-        else {
-            // Propogate the panic upwards and stop the collection.
-            // TODO: Maybe be a little nicer about this.
-            data.unwrap();
-        }
+
     }
 
     match matches.value_of("output") {
