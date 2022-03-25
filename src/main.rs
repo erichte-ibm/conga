@@ -10,6 +10,7 @@ use clap::{App, Arg, crate_version};
 //  might make importing easier, see mod.rs / module docs
 mod cpu;
 mod memory;
+mod os;
 mod gcc;
 
 // TODO: rename this
@@ -27,6 +28,8 @@ const PLATFORM: &'static [PlatformData] = &[
     PlatformData {tag: "mem.shared", func: memory::get_mem_shared},
     PlatformData {tag: "mem.buff/cache", func: memory::get_mem_buff_and_cache},
     PlatformData {tag: "mem.available", func: memory::get_mem_available},
+    PlatformData {tag: "os.kernel_release", func: os::get_kernel_release},
+    PlatformData {tag: "os.os_name", func: os::get_os_name},
     PlatformData {tag: "swap.total", func: memory::get_swap_total},
     PlatformData {tag: "swap.used", func: memory::get_swap_used},
     PlatformData {tag: "swap.free", func: memory::get_swap_free},
