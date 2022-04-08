@@ -8,7 +8,6 @@ const OS_NAME_COMMAND: &'static str = "grep PRETTY_NAME /etc/os-release";
 
 pub fn get_kernel_release(col: &mut Collector) -> Result<CollectorValue, CollectorErr> {
     let captures = col.parse_from_command(KERNEL_RELEASE_COMMAND, r"(.*)", OutputStream::STDOUT)?;
-    //println!("{:?}", captures);
     Ok(CollectorValue::Text(captures[1].to_string()))
 }
 
