@@ -55,9 +55,21 @@ In most cases, the output format should be unified across all architectures, and
 ## Collectors
 
 Name     | Description | Type | Arch | Mandatory
----------|-------------|------|------ | ----------
+---------|-------------|------|------ | -----------
 `cpu.cores` | Number of CPU cores | Integer | *any* | Yes
-TODO
+`gcc.version` | Version of the gcc compiler | Text | *any* | Yes
+`gcc.flags` | gcc compiler flags used | Integer | Text | Yes
+`mem.total` | Total amount of memory | Integer | *any* | Yes
+`mem.used` | Amount of memory being used | Integer | *any* | Yes
+`mem.free` | Amount of free memory | Integer | *any* | Yes
+`mem.shared` | Amount of shared memory | Integer | *any* | Yes
+`mem.buff/cache` | Amount of buff and cache memory | Integer | *any* | Yes
+`mem.available` | Amount of memory available | Integer | *any* | Yes
+`os.kernel_release` | Kernel release | Text | *any* | Yes
+`os.os_name` | Name of the operating system | Text | *any* | Yes
+`swap.total` | Total amount of swap space | Integer | *any* | Yes
+`swap.used` | Amount of swap space currently being used | Integer | *any* | Yes
+`swap.free` | Amount of swap space currently free | Integer | *any* | Yes
 
 
 
