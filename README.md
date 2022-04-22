@@ -42,6 +42,8 @@ If a collector is not optional, then it must be able to gather its information, 
 This can be bypassed with the `--allow-failures`, and the collector will instead record the string `"(null)"` for the offending tag.
 These failures may indicate a bug in `conga`, or it may indicate some system misconfiguration.
 
+NOTE: currently all collectors are mandatory. Optional collectors will be implemented in the future.
+
 ### Architecture-specific Collectors
 Collectors specific to a particular architecture should be contained within a top-level category, e.g. `"x86.some_subcategory"`.
 Exceptions may exist, and should be noted in the table below.
