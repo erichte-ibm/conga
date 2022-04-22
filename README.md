@@ -54,9 +54,9 @@ In most cases, the output format should be unified across all architectures, and
 
 ## Collectors
 
-Name     | Description | Type | Arch
----------|-------------|------|------
-`cpu.cores` | Number of CPU cores | Integer | *any*
+Name     | Description | Type | Arch | Mandatory
+---------|-------------|------|------ | ----------
+`cpu.cores` | Number of CPU cores | Integer | *any* | Yes
 TODO
 
 
