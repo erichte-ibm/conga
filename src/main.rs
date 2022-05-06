@@ -11,9 +11,10 @@ use clap::{App, Arg, crate_version};
 mod cpu;
 mod memory;
 mod gcc;
+mod security;
 
 // TODO: rename this
-struct TagCollector {
+struct SingleCollector {
     tag: &'static str,
     func: fn(&mut Collector) -> Result<CollectorValue, CollectorErr>,
 }
@@ -24,24 +25,25 @@ struct GroupCollector {
 }
 
 enum Tag {
-    Single(TagCollector),
+    Single(SingleCollector),
     Group(GroupCollector),
 }
 
 // TODO: This also needed a better name than "platform"
 const PLATFORM: &'static [Tag] = &[
-    Tag::Single(TagCollector {tag: "cpu.cores", func: cpu::get_cores}),
-    Tag::Single(TagCollector {tag: "mem.total", func: memory::get_mem_total}),
-    Tag::Single(TagCollector {tag: "mem.used", func: memory::get_mem_used}),
-    Tag::Single(TagCollector {tag: "mem.free", func: memory::get_mem_free}),
-    Tag::Single(TagCollector {tag: "mem.shared", func: memory::get_mem_shared}),
-    Tag::Single(TagCollector {tag: "mem.buff/cache", func: memory::get_mem_buff_and_cache}),
-    Tag::Single(TagCollector {tag: "mem.available", func: memory::get_mem_available}),
-    Tag::Single(TagCollector {tag: "swap.total", func: memory::get_swap_total}),
-    Tag::Single(TagCollector {tag: "swap.used", func: memory::get_swap_used}),
-    Tag::Single(TagCollector {tag: "swap.free", func: memory::get_swap_free}),
-    Tag::Single(TagCollector {tag: "gcc.version", func: gcc::version}),
-    Tag::Single(TagCollector {tag: "gcc.flags", func: gcc::flags}),
+    Tag::Single(SingleCollector {tag: "cpu.cores", func: cpu::get_cores}),
+    Tag::Single(SingleCollector {tag: "mem.total", func: memory::get_mem_total}),
+    Tag::Single(SingleCollector {tag: "mem.used", func: memory::get_mem_used}),
+    Tag::Single(SingleCollector {tag: "mem.free", func: memory::get_mem_free}),
+    Tag::Single(SingleCollector {tag: "mem.shared", func: memory::get_mem_shared}),
+    Tag::Single(SingleCollector {tag: "mem.buff/cache", func: memory::get_mem_buff_and_cache}),
+    Tag::Single(SingleCollector {tag: "mem.available", func: memory::get_mem_available}),
+    Tag::Single(SingleCollector {tag: "swap.total", func: memory::get_swap_total}),
+    Tag::Single(SingleCollector {tag: "swap.used", func: memory::get_swap_used}),
+    Tag::Single(SingleCollector {tag: "swap.free", func: memory::get_swap_free}),
+    Tag::Single(SingleCollector {tag: "gcc.version", func: gcc::version}),
+    Tag::Single(SingleCollector {tag: "gcc.flags", func: gcc::flags}),
+    Tag::Group(GroupCollector {tag: "security.vulnerability", func: security::get_vulnerabilities}),
 ];
 
 fn main() {
@@ -99,7 +101,7 @@ fn main() {
 
                 if let Ok(tg) = data {
                     for (tag, d) in tg {
-                        col.add_data(String::from(tag), d)
+                        col.add_data(format!("{}.{}", pd.tag, tag), d)
                     }
                 }
                 else if matches.is_present("allow-failures") {
