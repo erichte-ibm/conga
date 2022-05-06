@@ -61,8 +61,7 @@ impl Collector {
     }
 
     // returns a vector of strings for every match captured from output
-    pub fn parse_from_command(&mut self, command: &str, regex: &str, out_type: OutputStream) -> Result<Vec<String>, CollectorErr> {
-        let re = Regex::new(regex).unwrap();
+    pub fn parse_from_command(&mut self, command: &str, regex: &Regex, out_type: OutputStream) -> Result<Vec<String>, CollectorErr> {
         let out = self.run_command(command);
 
         let output = match out_type {
@@ -70,7 +69,7 @@ impl Collector {
             OutputStream::STDERR => String::from_utf8(out.stderr)?,
         };
 
-        let cap = re.captures(&output);
+        let cap = regex.captures(&output);
         return match cap {
             Some(c) => Ok(
                 c.iter()
