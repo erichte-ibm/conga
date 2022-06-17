@@ -1,6 +1,8 @@
 # conga
 A utility to collect system runtime configuration data as output as JSON.
 
+Currently, conga requires at least Rust version 1.46+ to compile.
+
 ## Usage
 
 ```
